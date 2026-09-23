@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Filter,
   ChevronDown,
@@ -11,10 +11,12 @@ import {
   Download,
   ChevronUp,
   X,
+  PenLine,
 } from 'lucide-react';
 import { FilterDrawer, FilterState } from './FilterDrawer';
 import { DatePickerPopover } from './DatePickerPopover';
 import { EventDetailDrawer } from './EventDetailDrawer';
+import { LogsScreen } from './LogsScreen';
 
 const chartData = [
   { date: 'May 12', web: 1200, server: 1100 },
@@ -240,14 +242,31 @@ const initialFilters: FilterState = {
   timeEnd: '',
 };
 
-export const EventOverviewScreen: React.FC = () => {
-  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'logs' | 'users'>('overview');
+interface EventOverviewScreenProps {
+  initialTab?: 'overview' | 'users' | 'logs';
+}
+
+export const EventOverviewScreen: React.FC<EventOverviewScreenProps> = ({ initialTab = 'overview' }) => {
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'users' | 'logs'>(initialTab);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(initialFilters);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState('May 12, 2026 – May 23, 2026');
   const [eventDrawerOpen, setEventDrawerOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<{ name: string; detail: typeof eventDetails[string] } | null>(null);
+  const [granularity, setGranularity] = useState<'Daily' | 'Weekly' | 'Monthly'>('Daily');
+  const [granularityOpen, setGranularityOpen] = useState(false);
+  const granularityRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (granularityRef.current && !granularityRef.current.contains(e.target as Node)) {
+        setGranularityOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const getActiveFilterCount = () => {
     let count = 0;
@@ -317,8 +336,8 @@ export const EventOverviewScreen: React.FC = () => {
 
   const subTabs = [
     { id: 'overview' as const, label: 'Event Overview' },
-    { id: 'logs' as const, label: 'Logs' },
     { id: 'users' as const, label: 'Users' },
+    { id: 'logs' as const, label: 'Logs' },
   ];
 
   return (
@@ -426,13 +445,40 @@ export const EventOverviewScreen: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button className="text-[11px] text-muted hover:text-ink transition-colors">
-                    Annotate +
+                  <button
+                    type="button"
+                    title="Annotate"
+                    aria-label="Annotate"
+                    className="w-7 h-7 flex items-center justify-center border border-border rounded-md text-muted hover:text-ink hover:bg-bg transition-colors"
+                  >
+                    <PenLine className="w-3.5 h-3.5" />
                   </button>
-                  <button className="flex items-center gap-1 text-[11px] text-muted hover:text-ink transition-colors">
-                    Daily
-                    <ChevronDown className="w-3 h-3" />
-                  </button>
+                  <div className="relative" ref={granularityRef}>
+                    <button
+                      onClick={() => setGranularityOpen(!granularityOpen)}
+                      className="flex items-center gap-1 text-[11px] text-muted hover:text-ink transition-colors"
+                    >
+                      {granularity}
+                      <ChevronDown className="w-3 h-3" />
+                    </button>
+                    {granularityOpen && (
+                      <div className="absolute top-full right-0 mt-1.5 bg-surface border border-border rounded-lg shadow-lg z-20 py-1 min-w-[110px]">
+                        {(['Daily', 'Weekly', 'Monthly'] as const).map((opt) => (
+                          <button
+                            key={opt}
+                            onClick={() => { setGranularity(opt); setGranularityOpen(false); }}
+                            className={`w-full text-left px-3 py-1.5 text-[11px] transition-colors ${
+                              granularity === opt
+                                ? 'text-ink font-semibold bg-bg'
+                                : 'text-muted hover:text-ink hover:bg-bg'
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -560,9 +606,7 @@ export const EventOverviewScreen: React.FC = () => {
       )}
 
       {activeSubTab === 'logs' && (
-        <div className="bg-surface border border-border rounded-lg p-8 text-center">
-          <p className="text-[13px] text-muted">Logs content</p>
-        </div>
+        <LogsScreen />
       )}
 
       {activeSubTab === 'users' && (

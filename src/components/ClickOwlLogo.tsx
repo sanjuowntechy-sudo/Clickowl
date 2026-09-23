@@ -40,3 +40,19 @@ export const ClickOwlLogo: React.FC<ClickOwlLogoProps> = ({
     </div>
   );
 };
+
+interface ClickOwlMarkProps {
+  className?: string;
+}
+
+export const ClickOwlMark: React.FC<ClickOwlMarkProps> = ({ className = '' }) => {
+  return (
+    <div
+      role="img"
+      aria-label="ClickOwl"
+      className={`w-8 h-8 rounded-lg bg-ink flex items-center justify-center shrink-0 select-none ${className}`}
+    >
+      <span className="text-brand text-[13px] font-extrabold leading-none tracking-tight">CO</span>
+    </div>
+  );
+};

@@ -392,7 +392,7 @@ export const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({ onClose, o
           </div>
 
           {/* Selected Range Display */}
-          {(selectedStart || selectedEnd) && (
+          {/* {(selectedStart || selectedEnd) && (
             <div className="flex items-center justify-center gap-3 mb-3 px-3 py-1.5 bg-[#F9FAFB] rounded-md border border-[#E5E7EB]">
               <div className="text-center">
                 <p className="text-[9px] text-[#9CA3AF] uppercase tracking-wider font-medium">Start</p>
@@ -404,7 +404,7 @@ export const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({ onClose, o
                 <p className="text-[12px] text-[#111111] font-semibold">{formatDisplayDate(selectedEnd)}</p>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Dual Calendars */}
           <div className="flex gap-4">

@@ -199,12 +199,12 @@ function AppContent() {
           } />
           <Route path="/analytics/logs" element={
             <DashboardLayout activePage="analytics" {...dashboardProps}>
-              <EventOverviewScreen />
+              <EventOverviewScreen initialTab="logs" />
             </DashboardLayout>
           } />
           <Route path="/analytics/users" element={
             <DashboardLayout activePage="analytics" {...dashboardProps}>
-              <EventOverviewScreen />
+              <EventOverviewScreen initialTab="users" />
             </DashboardLayout>
           } />
           <Route path="/analytics/funnels" element={
